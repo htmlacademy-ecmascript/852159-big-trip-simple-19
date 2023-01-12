@@ -1,7 +1,7 @@
 # Проект «Большое путешествие (простой)»
 
 * Студент: [Vasya Smit](https://up.htmlacademy.ru/ecmascript/19/user/852159).
-* Наставник: `Неизвестно`.
+* Наставник: `Иван Кривонос`(https://htmlacademy.ru/profile/id1311037).
 
 ---
 
