@@ -1,25 +1,23 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
 function createPointListTemplate() {
-    return (
-    `<ul class="trip-events__list">
-    </ul>`
-  );
+  return `<ul class="trip-events__list">
+    </ul>`;
 }
 
 export default class PointListView {
-    getTemplate(){
-        return createPointListTemplate();
-    }
+  getTemplate() {
+    return createPointListTemplate();
+  }
 
-    getElement() {
-        if (!this.element) {
-            this.element = createElement(this.getTemplate());
-        }
-        return this.element;
+  getElement() {
+    if (!this.element) {
+      this.element = createElement(this.getTemplate());
     }
-    
-    removeElement() {
-        this.element = null;
-    }
+    return this.element;
+  }
+
+  removeElement() {
+    this.element = null;
+  }
 }

@@ -1,4 +1,4 @@
-import {render} from '../render.js';
+import { render } from '../render.js';
 import FilterView from '../view/filter-view.js';
 import PointView from '../view/point-view.js';
 import SortView from '../view/sort-view.js';
@@ -9,7 +9,7 @@ export default class TripPresenter {
   sortView = new SortView();
   pointListView = new PointListView();
 
-  constructor({filterContainer, siteMainContainer}) {
+  constructor({ filterContainer, siteMainContainer }) {
     this.filterContainer = filterContainer;
     this.siteMainContainer = siteMainContainer;
   }

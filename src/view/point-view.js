@@ -1,7 +1,7 @@
-import { createElement } from "../render";
+import { createElement } from '../render';
 
 function createPointTemplate() {
-    return (`
+  return (`
             <li class="trip-events__item">
               <div class="event">
                 <time class="event__date" datetime="2019-03-18">MAR 18</time>
@@ -36,18 +36,18 @@ function createPointTemplate() {
 }
 
 export default class PointView {
-    getTemplate(){
-        return createPointTemplate();
-    }
+  getTemplate() {
+    return createPointTemplate();
+  }
 
-    getElement() {
-        if (!this.element) {
-            this.element = createElement(this.getTemplate());
-        }
-        return this.element;
+  getElement() {
+    if (!this.element) {
+      this.element = createElement(this.getTemplate());
     }
-    
-    removeElement() {
-        this.element = null;
-    }
+    return this.element;
+  }
+
+  removeElement() {
+    this.element = null;
+  }
 }
