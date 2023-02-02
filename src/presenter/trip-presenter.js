@@ -4,6 +4,7 @@ import PointView from '../view/point-view.js';
 import SortView from '../view/sort-view.js';
 import PointListView from '../view/point-list-view.js';
 import PointEditView from '../view/point-edit-view.js';
+import NoPointView from '../view/no-point-view.js';
 
 export default class TripPresenter {
   #pointListView = new PointListView();
@@ -11,6 +12,7 @@ export default class TripPresenter {
   #points = [];
   #filterContainer = null;
   #siteMainContainer = null;
+  #noPointView = new NoPointView();
 
   constructor({ filterContainer, siteMainContainer, pointsModel }) {
     this.#filterContainer = filterContainer;
@@ -20,8 +22,13 @@ export default class TripPresenter {
 
   init() {
     this.#points = [...this.#pointsModel.points];
-
     render(new FilterView(), this.#filterContainer);
+
+    if (this.#points.length === 0) {
+      render(this.#noPointView, this.#siteMainContainer);
+      return;
+    }
+
     render(new SortView(), this.#siteMainContainer);
     render(this.#pointListView, this.#siteMainContainer);
     this.#points.forEach((point) => {
