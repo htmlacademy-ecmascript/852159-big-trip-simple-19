@@ -9,19 +9,25 @@ export default class TripPresenter {
   sortView = new SortView();
   pointListView = new PointListView();
 
-  constructor({ filterContainer, siteMainContainer }) {
+  constructor({ filterContainer, siteMainContainer, pointsModel }) {
     this.filterContainer = filterContainer;
     this.siteMainContainer = siteMainContainer;
+    this.pointsModel = pointsModel;
   }
 
   init() {
+    this.points = [...this.pointsModel.getPoints()];
+
     render(new FilterView(), this.filterContainer);
     render(this.sortView, this.siteMainContainer);
     render(this.pointListView, this.siteMainContainer);
-    render(new PointEditView(), this.pointListView.getElement());
-
-    for (let i = 0; i < 3; i++) {
-      render(new PointView(), this.pointListView.getElement());
-    }
+    this.points.forEach((point, index) => {
+      if(index === 0) {
+        render(new PointEditView(point), this.pointListView.getElement());
+      }
+      else {
+        render(new PointView(point), this.pointListView.getElement());
+      }
+    });
   }
 }
