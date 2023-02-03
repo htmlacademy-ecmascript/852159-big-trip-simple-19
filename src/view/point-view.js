@@ -1,9 +1,9 @@
-import { createElement } from '../render';
 import { DATE_TIME_FORMAT } from '../constants/date-time';
 import { getPointIconUrl, POINT_TYPE } from '../constants/point';
 import { formatDate } from '../utils';
 import { mockOffers } from '../mock/offer';
 import { getDesination } from '../mock/destination';
+import AbstractView from '../framework/view/abstract-view';
 
 function createOfferTempalte(offer) {
   return (
@@ -48,26 +48,25 @@ function createPointTemplate(point) {
             </li>`);
 }
 
-export default class PointView {
-  #element = null;
+export default class PointView extends AbstractView {
   #point = null;
+  #handleEditClick = null;
 
-  constructor({point}) {
+  constructor({point, onEditClick}) {
+    super();
     this.#point = point;
+    this.#handleEditClick = onEditClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
   }
 
   get template() {
     return createPointTemplate(this.#point);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

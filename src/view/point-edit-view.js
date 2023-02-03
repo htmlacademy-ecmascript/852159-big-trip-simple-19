@@ -1,9 +1,9 @@
-import { createElement } from '../render';
 import { getPointIconUrl, POINT_DEFAULT, POINT_TYPE, POINT_TYPE_CLASS_NAME } from '../constants/point';
 import { formatDate } from '../utils';
 import { DATE_TIME_FORMAT } from '../constants/date-time';
 import { mockOffers } from '../mock/offer';
 import { getDesination, TOWNS } from '../mock/destination';
+import AbstractView from '../framework/view/abstract-view';
 
 function createTownsTemplete() {
   return TOWNS.map((town) => `<option value="${town}"></option>`).join('');
@@ -111,26 +111,35 @@ function createPointEditTemplate(point) {
 </form></li>`;
 }
 
-export default class PointEditView {
-  #element = null;
+export default class PointEditView extends AbstractView {
   #point = null;
+  #handleFormSubmit = null;
+  #handleFormClose = null;
 
-  constructor({point = POINT_DEFAULT}) {
+  constructor({ point = POINT_DEFAULT, onFormSubmit, onFormClose }) {
+    super();
     this.#point = point;
+    this.#handleFormSubmit = onFormSubmit;
+    this.#handleFormClose = onFormClose;
+
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#formCloseHandler);
   }
 
   get template() {
     return createPointEditTemplate(this.#point);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-    return this.#element;
-  }
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  #formCloseHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormClose();
+  };
 }

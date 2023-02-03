@@ -1,4 +1,4 @@
-import { render } from '../render.js';
+import { render, replace } from '../framework/render.js';
 import FilterView from '../view/filter-view.js';
 import PointView from '../view/point-view.js';
 import SortView from '../view/sort-view.js';
@@ -37,39 +37,34 @@ export default class TripPresenter {
   }
 
   #renderPoint(point) {
-    const pointComponent = new PointView({point});
-    const pointEditComponent = new PointEditView({point});
-
-    const replaceCardToForm = () => {
-      this.#pointListView.element.replaceChild(pointEditComponent.element, pointComponent.element);
-    };
-
-    const replaceFormToCard = () => {
-      this.#pointListView.element.replaceChild(pointComponent.element, pointEditComponent.element);
-    };
-
     const escKeyDownHandler = (evt) => {
       if (evt.key === 'Escape' || evt.key === 'Esc') {
         evt.preventDefault();
-        replaceFormToCard();
+        replaceFormToCard.call(this);
         document.removeEventListener('keydown', escKeyDownHandler);
       }
     };
 
-    pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceCardToForm();
+    const pointComponent = new PointView({point, onEditClick: () => {
+      replaceCardToForm.call(this);
       document.addEventListener('keydown', escKeyDownHandler);
-    });
-    pointEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
-      replaceFormToCard();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    });
+    }});
+    const pointEditComponent = new PointEditView({point,
+      onFormSubmit: () => {
+        replaceFormToCard.call(this);
+        document.removeEventListener('keydown', escKeyDownHandler);
+      },
+      onFormClose: () => {
+        replaceFormToCard.call(this);
+        document.removeEventListener('keydown', escKeyDownHandler);
+      }});
+    function replaceCardToForm() {
+      replace(pointEditComponent, pointComponent);
+    }
 
-    pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
-      replaceFormToCard();
-      document.removeEventListener('keydown', escKeyDownHandler);
-    });
+    function replaceFormToCard() {
+      replace(pointComponent, pointEditComponent);
+    }
 
     render(pointComponent, this.#pointListView.element);
   }
