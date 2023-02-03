@@ -22,7 +22,7 @@ export default class TripPresenter {
 
   init() {
     this.#points = [...this.#pointsModel.points];
-    render(new FilterView(), this.#filterContainer);
+    render(new FilterView({points: this.#points}), this.#filterContainer);
 
     if (this.#points.length === 0) {
       render(this.#noPointView, this.#siteMainContainer);
