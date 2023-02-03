@@ -26,7 +26,7 @@ function createPointTemplate(point) {
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="${getPointIconUrl(point)}" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${POINT_TYPE[point.type]} ${destination.title}</h3>
+                <h3 class="event__title">${point.type} ${destination.title}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${formatDate(point.start, DATE_TIME_FORMAT.DATETIME)}">${formatDate(point.start, DATE_TIME_FORMAT.POINT_TIME)}</time>
