@@ -4,6 +4,8 @@ import SortView from '../view/sort-view.js';
 import PointListView from '../view/point-list-view.js';
 import NoPointView from '../view/no-point-view.js';
 import PointPresenter from './point-presenter.js';
+import { DEFAULT_SORT_TYPE, SortType } from '../constants/sort.js';
+import { sortPointByDate, sortPointByPrice } from '../util/point.js';
 
 export default class TripPresenter {
   #pointListView = new PointListView();
@@ -12,6 +14,8 @@ export default class TripPresenter {
   #filterContainer = null;
   #siteMainContainer = null;
   #noPointView = new NoPointView();
+  #sortComponent = null;
+  #currentSortType = null;
   #pointPresenters = [];
 
   constructor({ filterContainer, siteMainContainer, pointsModel }) {
@@ -29,7 +33,12 @@ export default class TripPresenter {
       return;
     }
 
-    render(new SortView(), this.#siteMainContainer);
+    this.#sortPoints(DEFAULT_SORT_TYPE);
+    this.#renderSort();
+    this.#renderPointsList();
+  }
+
+  #renderPointsList() {
     render(this.#pointListView, this.#siteMainContainer);
     this.#points.forEach((point) => {
       const pointPresenter = new PointPresenter({
@@ -40,6 +49,35 @@ export default class TripPresenter {
       this.#pointPresenters.push(pointPresenter);
     });
   }
+
+  #renderSort() {
+    this.#sortComponent = new SortView({
+      onSortTypeChange: this.#handleSortTypeChange,
+
+    });
+    render(this.#sortComponent, this.#siteMainContainer);
+  }
+
+  #sortPoints (sortType) {
+    if (sortType === SortType.DAY) {
+      this.#points.sort(sortPointByDate);
+    } else {
+      this.#points.sort(sortPointByPrice);
+    }
+    this.#currentSortType = sortType;
+  }
+
+  #clearPointsList() {
+    this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
+    this.#pointPresenters = [];
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (sortType === this.#currentSortType) return;
+    this.#sortPoints(sortType);
+    this.#clearPointsList();
+    this.#renderPointsList();
+  };
 
   #resetPoints() {
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.resetView());

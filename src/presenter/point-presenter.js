@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render.js';
+import { render, replace, remove } from '../framework/render.js';
 import PointView from '../view/point-view.js';
 import PointEditView from '../view/point-edit-view.js';
 
@@ -60,6 +60,11 @@ export default class PointPresenter {
       evt.preventDefault();
       this.#replaceFormToCard();
     }
+  }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
   }
 
   resetView() {

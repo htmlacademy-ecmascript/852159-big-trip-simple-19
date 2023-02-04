@@ -1,5 +1,5 @@
 import { getPointIconUrl, POINT_DEFAULT, POINT_TYPE, POINT_TYPE_CLASS_NAME } from '../constants/point';
-import { formatDate } from '../utils';
+import { formatDate } from '../util/common';
 import { DATE_TIME_FORMAT } from '../constants/date-time';
 import { mockOffers } from '../mock/offer';
 import { getDesination, TOWNS } from '../mock/destination';

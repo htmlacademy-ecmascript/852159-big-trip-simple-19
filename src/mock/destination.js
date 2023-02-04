@@ -1,4 +1,4 @@
-import { getRandomArrayElement, getRandomInt } from '../utils';
+import { getRandomArrayElement, getRandomInt } from '../util/common';
 
 const DESCS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',

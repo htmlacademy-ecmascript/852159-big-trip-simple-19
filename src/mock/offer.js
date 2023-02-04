@@ -1,4 +1,4 @@
-import { getRandomArrayElement, getRandomInt } from '../utils';
+import { getRandomArrayElement, getRandomInt } from '../util/common';
 import { DESTINATIONS_COUNT } from './destination';
 
 const TITLES = [

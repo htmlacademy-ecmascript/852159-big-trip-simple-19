@@ -1,6 +1,6 @@
 import { DATE_TIME_FORMAT } from '../constants/date-time';
-import { getPointIconUrl, POINT_TYPE } from '../constants/point';
-import { formatDate } from '../utils';
+import { getPointIconUrl } from '../constants/point';
+import { formatDate } from '../util/common';
 import { mockOffers } from '../mock/offer';
 import { getDesination } from '../mock/destination';
 import AbstractView from '../framework/view/abstract-view';
