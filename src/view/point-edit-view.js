@@ -39,7 +39,8 @@ function createPointEditTemplate(point) {
   const offers = createOffersTemplate(point);
   const destination = getDesination(point.destination);
   const destinationImages = createDestinationImagesTemplate(destination);
-  return `<form class="event event--edit" action="#" method="post">
+  return `<li class="trip-events__item">
+  <form class="event event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -107,26 +108,29 @@ function createPointEditTemplate(point) {
       </div>
     </section>
   </section>
-</form>`;
+</form></li>`;
 }
 
 export default class PointEditView {
+  #element = null;
+  #point = null;
+
   constructor({point = POINT_DEFAULT}) {
-    this.point = point;
+    this.#point = point;
   }
 
-  getTemplate() {
-    return createPointEditTemplate(this.point);
+  get template() {
+    return createPointEditTemplate(this.#point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
