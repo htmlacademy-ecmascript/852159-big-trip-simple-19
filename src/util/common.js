@@ -19,6 +19,6 @@ function randomDate(start, end = null) {
   return dayjs(newDate);
 }
 
-const formatDate = (date, format) => date.format(format);
+const formatDate = (date, format) => dayjs(date).format(format);
 
 export { getRandomArrayElement, getRandomInt, randomDate, formatDate };

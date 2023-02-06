@@ -1,27 +1,27 @@
 import dayjs from 'dayjs';
 
 export const POINT_TYPE = {
-  TAXI: 'Taxi',
-  BUS: 'Bus',
-  TRAIN: 'Train',
-  SHIP: 'Ship',
-  DRIVE: 'Drive',
-  FLIGHT: 'Flight',
-  CHECK_IN: 'Check-in',
-  SIGHTSEEING: 'Sightseeing',
-  RESTAURANT: 'Restaurant',
+  TAXI: 'taxi',
+  BUS: 'bus',
+  TRAIN: 'train',
+  SHIP: 'ship',
+  DRIVE: 'drive',
+  FLIGHT: 'flight',
+  CHECK_IN: 'check-in',
+  SIGHTSEEING: 'sightseeing',
+  RESTAURANT: 'restaurant',
 };
 
-export const POINT_TYPE_CLASS_NAME = {
-  [POINT_TYPE.TAXI]: 'taxi',
-  [POINT_TYPE.BUS]: 'bus',
-  [POINT_TYPE.TRAIN]: 'train',
-  [POINT_TYPE.SHIP]: 'ship',
-  [POINT_TYPE.DRIVE]: 'drive',
-  [POINT_TYPE.FLIGHT]: 'flight',
-  [POINT_TYPE.CHECK_IN]: 'check.png',
-  [POINT_TYPE.SIGHTSEEING]: 'sightseeing',
-  [POINT_TYPE.RESTAURANT]: 'restaurant',
+export const POINT_TYPE_NAME = {
+  [POINT_TYPE.TAXI]: 'Taxi',
+  [POINT_TYPE.BUS]: 'Bus',
+  [POINT_TYPE.TRAIN]: 'Train',
+  [POINT_TYPE.SHIP]: 'Ship',
+  [POINT_TYPE.DRIVE]: 'Drive',
+  [POINT_TYPE.FLIGHT]: 'Flight',
+  [POINT_TYPE.CHECK_IN]: 'Check-in',
+  [POINT_TYPE.SIGHTSEEING]: 'Sightseeing',
+  [POINT_TYPE.RESTAURANT]: 'Restaurant',
 };
 
 export const POINT_ICON = {

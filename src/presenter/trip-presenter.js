@@ -73,7 +73,9 @@ export default class TripPresenter {
   }
 
   #handleSortTypeChange = (sortType) => {
-    if (sortType === this.#currentSortType) return;
+    if (sortType === this.#currentSortType) {
+      return;
+    }
     this.#sortPoints(sortType);
     this.#clearPointsList();
     this.#renderPointsList();
