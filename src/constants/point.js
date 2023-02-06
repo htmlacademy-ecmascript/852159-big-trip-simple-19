@@ -1,5 +1,3 @@
-import dayjs from 'dayjs';
-
 export const POINT_TYPE = {
   TAXI: 'taxi',
   BUS: 'bus',
@@ -39,8 +37,8 @@ export const POINT_ICON = {
 export const POINT_DEFAULT = {
   type: POINT_TYPE.BUS,
   destination: 1,
-  start: dayjs(),
-  end: dayjs(),
+  start: new Date(),
+  end: new Date(),
   price: 0,
   offers: [1]
 };

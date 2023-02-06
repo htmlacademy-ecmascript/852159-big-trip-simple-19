@@ -1,3 +1,4 @@
+import flatpickr from 'flatpickr';
 import { getPointIconUrl, POINT_DEFAULT, POINT_TYPE, POINT_TYPE_NAME } from '../constants/point';
 import { formatDate } from '../util/common';
 import { DATE_TIME_FORMAT } from '../constants/date-time';
@@ -5,6 +6,8 @@ import { mockOffers } from '../mock/offer';
 import { getDesination, mockDestinations, TOWNS } from '../mock/destination';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { mockOffersByType } from '../mock/offer-by-type';
+
+import 'flatpickr/dist/flatpickr.min.css';
 
 function createTownsTemplete() {
   return TOWNS.map((town) => `<option value="${town}"></option>`).join('');
@@ -112,6 +115,9 @@ export default class PointEditView extends AbstractStatefulView {
   #handleFormSubmit = null;
   #handleFormClose = null;
 
+  #datepickerStart = null;
+  #datepickerEnd = null;
+
   constructor({ point = POINT_DEFAULT, onFormSubmit, onFormClose }) {
     super();
     this.#handleFormSubmit = onFormSubmit;
@@ -119,6 +125,42 @@ export default class PointEditView extends AbstractStatefulView {
     this._setState(PointEditView.parsePointToState(point));
 
     this._restoreHandlers();
+  }
+
+  #setDatepickerStart() {
+    this.#datepickerStart = flatpickr(
+      this.element.querySelector('input[name=event-start-time]'),
+      {
+        dateFormat: 'j/m/y H:i',
+        defaultDate: this._state.start,
+        onChange: this.#startChangeHandler.bind(this),
+        enableTime: true,
+        maxDate: this._state.end
+      }
+    );
+  }
+
+  #startChangeHandler([start]) {
+    this.#datepickerEnd.set('minDate', start);
+    this._setState({ start });
+  }
+
+  #setDatepickerEnd() {
+    this.#datepickerEnd = flatpickr(
+      this.element.querySelector('input[name=event-end-time]'),
+      {
+        dateFormat: 'j/m/y H:i',
+        defaultDate: this._state.end,
+        onChange: this.#endChangeHandler.bind(this),
+        enableTime: true,
+        minDate: this._state.start,
+      }
+    );
+  }
+
+  #endChangeHandler([end]) {
+    this.#datepickerStart.set('maxDate', end);
+    this._setState({ end });
   }
 
   get template() {
@@ -188,6 +230,9 @@ export default class PointEditView extends AbstractStatefulView {
     element.querySelector('form').addEventListener('submit', this.#formSubmitHandler.bind(this));
     element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler.bind(this));
     element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler.bind(this));
+
+    this.#setDatepickerStart();
+    this.#setDatepickerEnd();
   }
 
   static parsePointToState(point) {

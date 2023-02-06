@@ -29,9 +29,9 @@ function createPointTemplate(point) {
                 <h3 class="event__title">${POINT_TYPE_NAME[point.type]} ${destination.title}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
-                    <time class="event__start-time" datetime="${formatDate(point.start, DATE_TIME_FORMAT.DATETIME)}">${formatDate(point.start, DATE_TIME_FORMAT.POINT_TIME)}</time>
+                    <time class="event__start-time" datetime="${point.start.toISOString()}">${formatDate(point.start, DATE_TIME_FORMAT.POINT_TIME)}</time>
                     &mdash;
-                    <time class="event__end-time" datetime=${formatDate(point.end, DATE_TIME_FORMAT.DATETIME)}">${formatDate(point.end, DATE_TIME_FORMAT.POINT_TIME)}</time>
+                    <time class="event__end-time" datetime=${point.end.toISOString()}">${formatDate(point.end, DATE_TIME_FORMAT.POINT_TIME)}</time>
                   </p>
                 </div>
                 <p class="event__price">
