@@ -1,6 +1,8 @@
 import { render, replace, remove } from '../framework/render.js';
 import PointView from '../view/point-view.js';
 import PointEditView from '../view/point-edit-view.js';
+import { UpdateType, UserAction } from '../const.js';
+import { isDatesEqual } from '../util/common.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -12,38 +14,59 @@ export default class PointPresenter {
   #pointListView = null;
   #pointComponent = null;
   #pointEditComponent = null;
-  #editCallback = null;
+
+  #handleModeChange = null;
+  #handlePointChange = null;
+
   #mode = Mode.DEFAULT;
 
-  constructor({ pointListView, editCallback }) {
+  constructor({ pointListView, onDataChange, onModeChange }) {
     this.#pointListView = pointListView;
-    this.#editCallback = editCallback;
+    this.#handlePointChange = onDataChange;
+    this.#handleModeChange = onModeChange;
   }
 
   #handleEditClick() {
-    this.#editCallback();
     this.#replaceCardToForm();
   }
 
-  #handleFormSubmit() {
+  #handleFormSubmit = (point) => {
+    const isMinor = !isDatesEqual(this.#point.start, point.start) || !isDatesEqual(this.#point.end, point.end);
+    this.#handlePointChange(
+      UserAction.UPDATE_POINT,
+      isMinor ? UpdateType.MINOR : UpdateType.PATCH,
+      point
+    );
     this.#replaceFormToCard();
-  }
+  };
 
   #handleFormClose() {
     this.#replaceFormToCard();
   }
 
-  init(point) {
+  init({point, offers, destinations}) {
     this.#point = point;
-    this.#pointComponent = new PointView({point, onEditClick: this.#handleEditClick.bind(this)});
-    this.#pointEditComponent = new PointEditView({point,
-      onFormSubmit: this.#handleFormSubmit.bind(this),
-      onFormClose: this.#handleFormClose.bind(this)
-    });
-    render(this.#pointComponent, this.#pointListView.element);
+    this.#pointComponent = new PointView({point, offers, destinations, onEditClick: this.#handleEditClick.bind(this)});
+    if (!this.#pointEditComponent) {
+      this.#pointEditComponent = new PointEditView({point, offers, destinations,
+        onFormSubmit: this.#handleFormSubmit.bind(this),
+        onFormClose: this.#handleFormClose.bind(this),
+        onResetClick: this.#handleResetClick
+      });
+      render(this.#pointComponent, this.#pointListView.element);
+    }
   }
 
+  #handleResetClick = (point) => {
+    this.#handlePointChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  };
+
   #replaceCardToForm() {
+    this.#handleModeChange();
     replace(this.#pointEditComponent, this.#pointComponent);
     this.#mode = Mode.EDITING;
     document.addEventListener('keydown', this.#escKeyDownHandler.bind(this));

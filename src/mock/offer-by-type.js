@@ -3,7 +3,7 @@ import { getRandomInt } from '../util/common';
 import { mockOffers } from './offer';
 
 function pickRandomOffers() {
-  return mockOffers.filter(() => getRandomInt(2)).map((offer)=> offer.id);
+  return mockOffers.filter(() => getRandomInt(2));
 }
 
 function generateOffersByType() {

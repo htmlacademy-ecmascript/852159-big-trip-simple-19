@@ -34,11 +34,11 @@ function getRandomOffer() {
   return getRandomArrayElement(mockOffers);
 }
 
-function getRandomOffers() {
+function getRandomOffers(offersOfType) {
   function unique(value, index, self) {
     return self.indexOf(value) === index;
   }
-  return Array.from({length: getRandomInt(5)}, getRandomOffer).map((item)=>item.id).filter(unique);
+  return Array.from({length: getRandomInt(5)}, () => getRandomArrayElement(offersOfType)).map((item)=>item.id).filter(unique);
 }
 
 export { getRandomOffer, getRandomOffers, mockOffers };

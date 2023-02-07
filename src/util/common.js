@@ -20,5 +20,6 @@ function randomDate(start, end = null) {
 }
 
 const formatDate = (date, format) => dayjs(date).format(format);
+const isDatesEqual = (dateA, dateB) => dayjs(dateA).isSame(dateB, 'D');
 
-export { getRandomArrayElement, getRandomInt, randomDate, formatDate };
+export { getRandomArrayElement, getRandomInt, randomDate, formatDate, isDatesEqual };

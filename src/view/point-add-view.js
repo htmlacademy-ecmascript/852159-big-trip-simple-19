@@ -165,7 +165,7 @@ function createPointAddTemplate() {
       </li>`;
 }
 
-export default class PointAdd extends AbstractView {
+export default class PointAddView extends AbstractView {
   get template() {
     return createPointAddTemplate();
   }

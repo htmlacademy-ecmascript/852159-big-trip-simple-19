@@ -34,15 +34,6 @@ export const POINT_ICON = {
   [POINT_TYPE.RESTAURANT]: 'restaurant.png',
 };
 
-export const POINT_DEFAULT = {
-  type: POINT_TYPE.BUS,
-  destination: 1,
-  start: new Date(),
-  end: new Date(),
-  price: 0,
-  offers: [1]
-};
-
 export function getPointIconUrl(point){
   return `img/icons/${POINT_ICON[point.type]}`;
 }

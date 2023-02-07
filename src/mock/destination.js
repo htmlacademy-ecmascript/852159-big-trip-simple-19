@@ -26,19 +26,23 @@ export const TOWNS = [
 ];
 
 function getRandomPicture() {
-  return `https://loremflickr.com/248/152?random=${getRandomInt(10000)}`;
+  return {
+    src: `https://loremflickr.com/248/152?random=${getRandomInt(10000)}`,
+    description: getRandomArrayElement(DESCS)
+  };
 }
 
 function getRandomDestinationDesceription() {
   return DESCS.filter(() => getRandomInt(2)).join(' ');
 }
 
-export const DESTINATIONS_COUNT = 10;
 
-export const mockDestinations = Array.from({length: DESTINATIONS_COUNT}, (elem, index) =>
+export const DESTINATIONS_COUNT = TOWNS.length;
+
+export const mockDestinations = Array.from(TOWNS, (elem, index) =>
   Object.assign({
     id: index,
-    title: getRandomArrayElement(TOWNS),
+    name: getRandomArrayElement(TOWNS),
     description: getRandomDestinationDesceription(),
     pictures: Array.from({length: getRandomInt(5)}, getRandomPicture)
   })

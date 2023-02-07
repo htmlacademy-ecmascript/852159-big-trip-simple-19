@@ -1,8 +1,6 @@
 import { DATE_TIME_FORMAT } from '../constants/date-time';
 import { getPointIconUrl, POINT_TYPE_NAME } from '../constants/point';
 import { formatDate } from '../util/common';
-import { mockOffers } from '../mock/offer';
-import { getDesination } from '../mock/destination';
 import AbstractView from '../framework/view/abstract-view';
 
 function createOfferTempalte(offer) {
@@ -14,19 +12,19 @@ function createOfferTempalte(offer) {
     </li>`);
 }
 
-function createPointTemplate(point) {
-  let offers = '<li class="event__offer">No additional offers</li>';
+function createPointTemplate(point, offers, destinations) {
+  let offersTemplate = '<li class="event__offer">No additional offers</li>';
   if(point.offers.length) {
-    offers = Array.from(point.offers, (id) => createOfferTempalte(mockOffers[id])).join('');
+    offersTemplate = Array.from(point.offers, (id) => createOfferTempalte(offers[point.type].offers.find((offer) => offer.id === id))).join('');
   }
-  const destination = getDesination(point.destination);
+  const pointDestination = destinations[point.destination];
   return (`<li class="trip-events__item">
               <div class="event">
                 <time class="event__date" datetime="${formatDate(point.start, DATE_TIME_FORMAT.DATE)}">${formatDate(point.start, DATE_TIME_FORMAT.POINT_DATE)}</time>
                 <div class="event__type">
                   <img class="event__type-icon" width="42" height="42" src="${getPointIconUrl(point)}" alt="Event type icon">
                 </div>
-                <h3 class="event__title">${POINT_TYPE_NAME[point.type]} ${destination.title}</h3>
+                <h3 class="event__title">${POINT_TYPE_NAME[point.type]} ${pointDestination.name}</h3>
                 <div class="event__schedule">
                   <p class="event__time">
                     <time class="event__start-time" datetime="${point.start.toISOString()}">${formatDate(point.start, DATE_TIME_FORMAT.POINT_TIME)}</time>
@@ -39,7 +37,7 @@ function createPointTemplate(point) {
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                  ${offers}
+                  ${offersTemplate}
                 </ul>
                 <button class="event__rollup-btn" type="button">
                   <span class="visually-hidden">Open event</span>
@@ -50,11 +48,15 @@ function createPointTemplate(point) {
 
 export default class PointView extends AbstractView {
   #point = null;
+  #offers = null;
+  #destinations = null;
   #handleEditClick = null;
 
-  constructor({point, onEditClick}) {
+  constructor({point, offers, destinations, onEditClick}) {
     super();
     this.#point = point;
+    this.#offers = offers;
+    this.#destinations = destinations;
     this.#handleEditClick = onEditClick;
 
     this.element.querySelector('.event__rollup-btn')
@@ -62,7 +64,7 @@ export default class PointView extends AbstractView {
   }
 
   get template() {
-    return createPointTemplate(this.#point);
+    return createPointTemplate(this.#point, this.#offers, this.#destinations);
   }
 
   #editClickHandler = (evt) => {

@@ -1,66 +1,23 @@
-import dayjs from 'dayjs';
+import { FilterType } from '../const';
 import AbstractView from '../framework/view/abstract-view';
 
-class Filter {
-  _points = null;
-  _name = '';
-  _value = '';
-  _checked = false;
-  _disabled = false;
-  _noPointsMessage = 'Click New Event to create your first point';
-
-  constructor({points}) {
-    this._points = points;
+const FiltersDataByType = {
+  [FilterType.EVERYTHING]: {
+    name: 'Everything',
+    value: FilterType.EVERYTHING,
+    checked: false,
+    disabled: false,
+  },
+  [FilterType.FUTURE]: {
+    name: 'Future',
+    value: FilterType.FUTURE,
+    checked: false,
+    disabled: false,
   }
+};
+Object.freeze(FiltersDataByType);
 
-  get enabled() {
-    return this._checked;
-  }
-
-  set enabled(value) {
-    this._checked = value;
-  }
-
-  get points() {
-    return this._points;
-  }
-
-  get noPointsMessage() {
-    return this._noPointsMessage;
-  }
-
-  get template() {
-    const isDisabled = this._disabled ? 'disabled' : '';
-    const isChecked = this._checked ? 'checked' : '';
-    return `<div class="trip-filters__filter">
-        <input id="filter-future" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${this._value}" ${isDisabled} ${isChecked}>
-        <label class="trip-filters__filter-label" for="filter-future">${this._name}</label>
-      </div>`;
-  }
-}
-
-class EverythingFilter extends Filter {
-  constructor({points}) {
-    super({points});
-    this._name = 'Everything';
-    this._value = 'everything';
-  }
-}
-
-class FutureFilter extends Filter {
-  constructor({points}) {
-    super({points});
-    this._name = 'Future';
-    this._value = 'future';
-    this._noPointsMessage = 'There are no future events now';
-    this._points = points.filter((point) => dayjs().isBefore(point.end));
-    if (!this._points.length) {
-      this._disabled = true;
-    }
-  }
-}
-
-function createFilterTemplate(points, filters) {
+function createFilterTemplate(filters) {
   return (
     `<div class="trip-controls__filters">
       <h2 class="visually-hidden">Filter events</h2>
@@ -74,19 +31,47 @@ function createFilterTemplate(points, filters) {
 
 export default class FilterView extends AbstractView {
   #points = null;
-  #enabledFilter = null;
-  #filters = [];
+  #onFilterTypeChanged = null;
+  #filters = {
+    [FilterType.EVERYTHING]: {
+      name: 'Everything',
+      value: FilterType.EVERYTHING,
+      checked: false,
+      disabled: false,
+    },
+    [FilterType.FUTURE]: {
+      name: 'Future',
+      value: FilterType.FUTURE,
+      checked: false,
+      disabled: false,
+    }
+  };
 
-  constructor({points}) {
+  constructor({currentFilterType, onFilterTypeChanged, filtersEnabled}) {
     super();
-    this.#points = points;
-    this.#filters = [ new EverythingFilter({points}),
-      new FutureFilter({points})];
-    this.#enabledFilter = this.#filters[0];
-    this.#enabledFilter.enabled = true;
+    this.#filters[currentFilterType].checked = true;
+    for(const filterType of Object.values(FilterType)) {
+      this.#filters[filterType].disabled = filtersEnabled[filterType] === false;
+    }
+
+    this.#onFilterTypeChanged = onFilterTypeChanged;
+    this.element.addEventListener('change', this.#filterTypeChangeHandler.bind(this));
+  }
+
+  #filterTypeChangeHandler(evt) {
+    evt.preventDefault();
+    this.#onFilterTypeChanged(evt.target.value);
   }
 
   get template() {
-    return createFilterTemplate(this.#points, this.#filters.map((filter) => filter.template).join(' '));
+    const filtersTemplate = Object.values(this.#filters).map((filterObject) => {
+      const isDisabled = filterObject.disabled ? 'disabled' : '';
+      const isChecked = filterObject.checked ? 'checked' : '';
+      return `<div class="trip-filters__filter">
+          <input id="filter-${filterObject.value}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filterObject.value}" ${isDisabled} ${isChecked}>
+          <label class="trip-filters__filter-label" for="filter-${filterObject.value}">${filterObject.name}</label>
+        </div>`;
+    }).join('');
+    return createFilterTemplate(filtersTemplate);
   }
 }
