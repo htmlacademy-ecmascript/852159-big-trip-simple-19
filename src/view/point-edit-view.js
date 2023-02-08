@@ -29,7 +29,7 @@ function createTownsTemplete(destinations) {
 function createEventTypesTemplate(point) {
   return Object.values(POINT_TYPE).map((type, index) =>
     `<div class="event__type-item">
-      <input id="event-type-${type}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${point.type === type ? 'checked' : ''}>
+      <input id="event-type-${type}-${index}" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${point.type === type ? 'checked' : ''} ${point.isDisabled ? 'disabled' : ''}>
       <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-${index}">${POINT_TYPE_NAME[type]}</label>
     </div>`).join('');
 }
@@ -40,7 +40,7 @@ function createOffersTemplate(point, offers) {
   offersOfType.map((offer) => offersById.set(offer.id, offer));
   return offersOfType.map((offer, index) =>
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-${index}" type="checkbox" name="event-offer-comfort" ${point.offers.includes(offer.id) ? 'checked' : ''} data-offer-id="${offer.id}">
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-comfort-${index}" type="checkbox" name="event-offer-comfort" ${point.offers.includes(offer.id) ? 'checked' : ''} data-offer-id="${offer.id}" ${point.isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-comfort-${index}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -59,6 +59,7 @@ function createPointEditTemplate(point, offers, destinations) {
   if (!pointDestination) {
     pointDestination = BLANK_DESTINATION;
   }
+  const deletingText = point.isDeleting ? 'Deleting...' : 'Delete';
   return `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -67,7 +68,7 @@ function createPointEditTemplate(point, offers, destinations) {
         <span class="visually-hidden">Choose event type</span>
         <img class="event__type-icon" width="17" height="17" src="${getPointIconUrl(point)}" alt="Event type icon">
       </label>
-      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
+      <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox" ${point.isDisabled ? 'disabled' : ''}>
 
       <div class="event__type-list">
         <fieldset class="event__type-group">
@@ -81,7 +82,7 @@ function createPointEditTemplate(point, offers, destinations) {
       <label class="event__label  event__type-output" for="event-destination-1">
         ${POINT_TYPE_NAME[point.type]}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1" required>
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${pointDestination.name}" list="destination-list-1" required ${point.isDisabled ? 'disabled' : ''}>
         <datalist id="destination-list-1">
           ${createTownsTemplete(destinations)}
         </datalist>
@@ -89,10 +90,10 @@ function createPointEditTemplate(point, offers, destinations) {
 
     <div class="event__field-group  event__field-group--time">
       <label class="visually-hidden" for="event-start-time-1">From</label>
-      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(point.start, DATE_TIME_FORMAT.POINT_DATE_TIME)}">
+      <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${formatDate(point.start, DATE_TIME_FORMAT.POINT_DATE_TIME)}" ${point.isDisabled ? 'disabled' : ''}>
       &mdash;
       <label class="visually-hidden" for="event-end-time-1">To</label>
-      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${formatDate(point.end, DATE_TIME_FORMAT.POINT_DATE_TIME)}">
+      <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value=${formatDate(point.end, DATE_TIME_FORMAT.POINT_DATE_TIME)}" ${point.isDisabled ? 'disabled' : ''}>
     </div>
 
     <div class="event__field-group  event__field-group--price">
@@ -100,11 +101,11 @@ function createPointEditTemplate(point, offers, destinations) {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.price}" required>
+      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${point.price}" required ${point.isDisabled ? 'disabled' : ''}>
     </div>
 
-    <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">${point.editPoint ? 'Delete' : 'Cancel' }</button>
+    <button class="event__save-btn  btn  btn--blue" type="submit">${point.isSaving ? 'Saving...' : 'Save'}</button>
+    <button class="event__reset-btn" type="reset">${point.editPoint ? deletingText : 'Cancel' }</button>
     ${point.editPoint ? `<button class="event__rollup-btn" type="button">
     <span class="visually-hidden">Open event</span>
   </button>` : '' }
@@ -267,7 +268,7 @@ export default class PointEditView extends AbstractStatefulView {
     element.querySelector('form').addEventListener('submit', this.#formSubmitHandler.bind(this));
     element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler.bind(this));
     element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler.bind(this));
-    element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
+    element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
 
     const eventResetBtn = element.querySelector('.event__reset-btn');
     if (eventResetBtn) {
@@ -287,13 +288,19 @@ export default class PointEditView extends AbstractStatefulView {
 
   static parsePointToState(point) {
     return {...point,
-      editPoint: Object.hasOwn(point, 'id')
+      editPoint: Object.hasOwn(point, 'id'),
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false,
     };
   }
 
   static parseStateToPoint(state) {
     const point = {...state};
     delete point.editPoint;
+    delete point.isDisabled;
+    delete point.isSaving;
+    delete point.isDeleting;
     return point;
   }
 

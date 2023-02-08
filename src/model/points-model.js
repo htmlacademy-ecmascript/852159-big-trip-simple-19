@@ -1,5 +1,6 @@
 import { UpdateType } from '../const.js';
 import Observable from '../framework/observable.js';
+import { sleep } from '../util/common.js';
 
 export default class PointsModel extends Observable {
   #pointsApiService = null;
@@ -33,13 +34,13 @@ export default class PointsModel extends Observable {
       this.#points = points.map(this.#adaptToClient);
       this.#offers = offers;
       this.#destinations = destinations;
+      this._notify(UpdateType.INIT);
     } catch (err) {
       this.#points = [];
       this.#offers = [];
       this.#destinations = [];
+      this._notify(UpdateType.ERROR);
     }
-
-    this._notify(UpdateType.INIT);
   }
 
   async updatePoint(updateType, update) {
@@ -58,6 +59,7 @@ export default class PointsModel extends Observable {
       ];
       this._notify(updateType, updatedPoint);
     } catch(err) {
+      this._notify(UpdateType.ERROR);
       throw new Error('Can\'t update point');
     }
   }
@@ -72,13 +74,13 @@ export default class PointsModel extends Observable {
       ];
       this._notify(updateType, newPoint);
     } catch (err) {
+      this._notify(UpdateType.ERROR);
       throw new Error('Can\'t add point');
     }
   }
 
   async deletePoint(updateType, update) {
     const index = this.#points.findIndex((point) => point.id === update.id);
-
     if (index === -1) {
       throw new Error('Can\'t update unexisting point');
     }
@@ -91,6 +93,7 @@ export default class PointsModel extends Observable {
       ];
       this._notify(updateType);
     } catch (err) {
+      this._notify(UpdateType.ERROR);
       throw new Error('Can\'t delete point');
     }
   }

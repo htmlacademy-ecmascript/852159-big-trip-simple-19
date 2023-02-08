@@ -4,18 +4,14 @@ import SortView from '../view/sort-view.js';
 import PointListView from '../view/point-list-view.js';
 import NoPointView from '../view/no-point-view.js';
 import PointPresenter from './point-presenter.js';
-import { DEFAULT_SORT_TYPE, FilterType, SortType, UpdateType } from '../const';
+import { DEFAULT_SORT_TYPE, FilterType, SortType, TimeLimit, UpdateType } from '../const';
 import { filter } from '../util/filter.js';
 import { sortPointByDate, sortPointByPrice } from '../util/point.js';
 import { UserAction } from '../const';
 import NewPointPresenter from './new-point-presenter.js';
 import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import LoadingView from '../view/loading-view.js';
-
-const TimeLimit = {
-  LOWER_LIMIT: 350,
-  UPPER_LIMIT: 1000,
-};
+import ErrorView from '../view/error-view.js';
 
 export default class TripPresenter {
   #pointListView = new PointListView();
@@ -36,6 +32,7 @@ export default class TripPresenter {
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
   });
+  #errorView = new ErrorView();
 
   constructor({ filterContainer, siteMainContainer, pointsModel,
     filterModel, onNewPointDestroy }) {
@@ -56,6 +53,7 @@ export default class TripPresenter {
   }
 
   addNewPoint() {
+    this.#resetPoints();
     if (this.#currentSortType !== SortType.DAY) {
       this.#handleSortTypeChange(SortType.DAY);
     }
@@ -113,6 +111,13 @@ export default class TripPresenter {
         this.#clearList({resetSortType: true});
         this.#renderPointsList();
         break;
+      case UpdateType.ERROR:
+        if (this.#isLoading) {
+          this.#isLoading = false;
+          remove(this.#loadingView);
+        }
+        this.#clearList({resetSortType: true});
+        render(this.#errorView, this.#siteMainContainer);
     }
   };
 
@@ -179,20 +184,38 @@ export default class TripPresenter {
   };
 
   #resetPoints() {
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setSaving();
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#newPointPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch (err) {
+          this.#newPointPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenters.get(update.id).setDeleting();
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch (err) {
+          this.#pointPresenters.get(update.id).setAborting();
+        }
         break;
     }
+    this.#uiBlocker.unblock();
   };
 }
