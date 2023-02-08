@@ -1,6 +1,4 @@
 import PointsModel from './model/points-model';
-import OffersModel from './model/offers-model';
-import DestinationsModel from './model/destinations-model';
 import FilterModel from './model/filter-model';
 
 import TripPresenter from './presenter/trip-presenter';
@@ -8,11 +6,11 @@ import FilterPresenter from './presenter/filter-presenter';
 import NewPointButtonView from './view/new-point-button-view';
 
 import { render } from './framework/render.js';
+import PointApiService from './point-api-service';
+import { AUTHORIZATION, ENDPOINT } from './const';
 
-const offersModel = new OffersModel();
-const destinationsModel = new DestinationsModel();
 const filterModel = new FilterModel();
-const pointsModel = new PointsModel();
+const pointsModel = new PointsModel(new PointApiService(ENDPOINT, AUTHORIZATION));
 
 const tripMainElement = document.querySelector('.trip-main');
 
@@ -22,8 +20,6 @@ const tripPresenter = new TripPresenter({
   filterContainer: siteFilterElement,
   siteMainContainer: siteMainElement,
   pointsModel,
-  offersModel,
-  destinationsModel,
   filterModel,
   onNewPointDestroy: handleNewPointDestroy
 });
@@ -45,6 +41,9 @@ function handleNewPointDestroy() {
   newPointButtonView.enable();
 }
 
-render(newPointButtonView, tripMainElement);
+pointsModel.init().finally(() => {
+  render(newPointButtonView, tripMainElement);
+});
+
 filterPresenter.init();
 tripPresenter.init();

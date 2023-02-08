@@ -35,7 +35,7 @@ function createEventTypesTemplate(point) {
 }
 
 function createOffersTemplate(point, offers) {
-  const offersOfType = offers[point.type].offers;
+  const offersOfType = offers.find((offerByType) => offerByType.type === point.type).offers;
   const offersById = new Map();
   offersOfType.map((offer) => offersById.set(offer.id, offer));
   return offersOfType.map((offer, index) =>
@@ -54,7 +54,7 @@ function createDestinationImagesTemplate(destination) {
 }
 
 function createPointEditTemplate(point, offers, destinations) {
-  const offersOfType = offers[point.type].offers;
+  const offersOfType = offers.find((offerByType) => offerByType.type === point.type).offers;
   let pointDestination = destinations.find((destination) => destination.id === point.destination);
   if (!pointDestination) {
     pointDestination = BLANK_DESTINATION;

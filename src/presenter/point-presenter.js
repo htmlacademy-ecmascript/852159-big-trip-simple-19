@@ -30,14 +30,21 @@ export default class PointPresenter {
     this.#replaceCardToForm();
   }
 
+  #estimateChanges(point) {
+    if (!isDatesEqual(this.#point.start, point.start) || !isDatesEqual(this.#point.end, point.end))
+    {
+      return UpdateType.MINOR;
+    }
+    return UpdateType.PATCH;
+  }
+
   #handleFormSubmit = (point) => {
-    const isMinor = !isDatesEqual(this.#point.start, point.start) || !isDatesEqual(this.#point.end, point.end);
+    this.#pointEditComponent.tralala = 1;
     this.#handlePointChange(
       UserAction.UPDATE_POINT,
-      isMinor ? UpdateType.MINOR : UpdateType.PATCH,
+      this.#estimateChanges(point),
       point
     );
-    this.#replaceFormToCard();
   };
 
   #handleFormClose() {
@@ -45,16 +52,34 @@ export default class PointPresenter {
   }
 
   init({point, offers, destinations}) {
+    const oldComponent = this.#pointComponent;
+    const oldEditComponent = this.#pointEditComponent;
+
     this.#point = point;
     this.#pointComponent = new PointView({point, offers, destinations, onEditClick: this.#handleEditClick.bind(this)});
-    if (!this.#pointEditComponent) {
-      this.#pointEditComponent = new PointEditView({point, offers, destinations,
-        onFormSubmit: this.#handleFormSubmit.bind(this),
-        onFormClose: this.#handleFormClose.bind(this),
-        onResetClick: this.#handleResetClick
-      });
-      render(this.#pointComponent, this.#pointListView.element);
+
+    this.#pointEditComponent = new PointEditView({point, offers, destinations,
+      onFormSubmit: this.#handleFormSubmit.bind(this),
+      onFormClose: this.#handleFormClose.bind(this),
+      onResetClick: this.#handleResetClick
+    });
+
+    if (!oldComponent && !oldEditComponent) {
+      return render(this.#pointComponent, this.#pointListView.element);
     }
+
+    switch(this.#mode) {
+      case Mode.DEFAULT:
+        replace (this.#pointComponent, oldComponent);
+        break;
+      case Mode.EDITING:
+        replace(this.#pointComponent, oldEditComponent);
+        this.#mode = Mode.DEFAULT;
+        break;
+    }
+
+    remove(oldComponent);
+    remove(oldEditComponent);
   }
 
   #handleResetClick = (point) => {

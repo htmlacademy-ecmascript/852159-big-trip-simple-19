@@ -15,9 +15,9 @@ function createOfferTempalte(offer) {
 function createPointTemplate(point, offers, destinations) {
   let offersTemplate = '<li class="event__offer">No additional offers</li>';
   if(point.offers.length) {
-    offersTemplate = Array.from(point.offers, (id) => createOfferTempalte(offers[point.type].offers.find((offer) => offer.id === id))).join('');
+    offersTemplate = offers.find((offerByType) => offerByType.type === point.type).offers.filter((offer) => point.offers.includes(offer.id)).map((offer) => createOfferTempalte(offer)).join('');
   }
-  const pointDestination = destinations[point.destination];
+  const pointDestination = destinations.find((dest) => point.destination === dest.id);
   return (`<li class="trip-events__item">
               <div class="event">
                 <time class="event__date" datetime="${formatDate(point.start, DATE_TIME_FORMAT.DATE)}">${formatDate(point.start, DATE_TIME_FORMAT.POINT_DATE)}</time>

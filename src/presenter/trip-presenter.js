@@ -19,20 +19,16 @@ export default class TripPresenter {
   #sortComponent = null;
   #currentSortType = DEFAULT_SORT_TYPE;
   #pointPresenters = new Map();
-  #offersModel = null;
-  #destinationsModel = null;
   #filterModel = null;
   #onNewPointDestroy = null;
   #filterType = null;
   #newPointPresenter = null;
 
   constructor({ filterContainer, siteMainContainer, pointsModel,
-    offersModel, destinationsModel, filterModel, onNewPointDestroy }) {
+    filterModel, onNewPointDestroy }) {
     this.#filterContainer = filterContainer;
     this.#siteMainContainer = siteMainContainer;
     this.#pointsModel = pointsModel;
-    this.#offersModel = offersModel;
-    this.#destinationsModel = destinationsModel;
     this.#filterModel = filterModel;
     this.#onNewPointDestroy = onNewPointDestroy;
 
@@ -74,11 +70,11 @@ export default class TripPresenter {
   }
 
   get offers() {
-    return this.#offersModel.offersByType;
+    return this.#pointsModel.offers;
   }
 
   get destinations() {
-    return this.#destinationsModel.destinations;
+    return this.#pointsModel.destinations;
   }
 
   #handleModelEvent = (updateType, point) => {
@@ -94,11 +90,15 @@ export default class TripPresenter {
         this.#clearList({resetSortType: true});
         this.#renderPointsList();
         break;
+      case UpdateType.INIT:
+        this.#clearList({resetSortType: true});
+        this.#renderPointsList();
+        break;
     }
   };
 
   #clearList({resetSortType = false} = {}) {
-    // this.#newTaskPresenter.destroy();
+    this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.destroy());
     this.#pointPresenters.clear();
 
