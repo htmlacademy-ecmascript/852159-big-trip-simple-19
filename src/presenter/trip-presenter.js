@@ -28,11 +28,11 @@ export default class TripPresenter {
   #newPointPresenter = null;
   #loadingView = new LoadingView();
   #isLoading = true;
+  #errorView = new ErrorView();
   #uiBlocker = new UiBlocker({
     lowerLimit: TimeLimit.LOWER_LIMIT,
     upperLimit: TimeLimit.UPPER_LIMIT
   });
-  #errorView = new ErrorView();
 
   constructor({ filterContainer, siteMainContainer, pointsModel,
     filterModel, onNewPointDestroy }) {
