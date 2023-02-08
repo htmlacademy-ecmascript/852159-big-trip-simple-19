@@ -61,5 +61,22 @@ export default class NewPointPresenter {
     }
   };
 
+  setSaving() {
+    this.#pointAddView.updateElement({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting() {
+    const resetFormState = () => {
+      this.#pointAddView.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+    this.#pointAddView.shake(resetFormState);
+  }
 
 }

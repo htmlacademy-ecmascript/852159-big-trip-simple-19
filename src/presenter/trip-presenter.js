@@ -9,6 +9,13 @@ import { filter } from '../util/filter.js';
 import { sortPointByDate, sortPointByPrice } from '../util/point.js';
 import { UserAction } from '../const';
 import NewPointPresenter from './new-point-presenter.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
+import LoadingView from '../view/loading-view.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class TripPresenter {
   #pointListView = new PointListView();
@@ -23,6 +30,12 @@ export default class TripPresenter {
   #onNewPointDestroy = null;
   #filterType = null;
   #newPointPresenter = null;
+  #loadingView = new LoadingView();
+  #isLoading = true;
+  #uiBlocker = new UiBlocker({
+    lowerLimit: TimeLimit.LOWER_LIMIT,
+    upperLimit: TimeLimit.UPPER_LIMIT
+  });
 
   constructor({ filterContainer, siteMainContainer, pointsModel,
     filterModel, onNewPointDestroy }) {
@@ -77,6 +90,10 @@ export default class TripPresenter {
     return this.#pointsModel.destinations;
   }
 
+  #renderLoading() {
+    render(this.#loadingView, this.#siteMainContainer);
+  }
+
   #handleModelEvent = (updateType, point) => {
     switch (updateType) {
       case UpdateType.PATCH:
@@ -91,6 +108,8 @@ export default class TripPresenter {
         this.#renderPointsList();
         break;
       case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingView);
         this.#clearList({resetSortType: true});
         this.#renderPointsList();
         break;
@@ -118,10 +137,13 @@ export default class TripPresenter {
   }
 
   #renderPointsList() {
+    if (this.#isLoading) {
+      return this.#renderLoading();
+    }
+
     if (this.points.length === 0) {
       this.#noPointView = new NoPointView({filterType: this.#filterModel.filterType});
-      render(this.#noPointView, this.#siteMainContainer);
-      return;
+      return render(this.#noPointView, this.#siteMainContainer);
     }
 
     this.#renderSort();
@@ -157,7 +179,6 @@ export default class TripPresenter {
   };
 
   #resetPoints() {
-    //this.#newPointPresenter.destroy();
     this.#pointPresenters.forEach((pointPresenter) => pointPresenter.resetView());
   }
 
