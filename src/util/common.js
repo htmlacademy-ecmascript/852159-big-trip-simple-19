@@ -12,13 +12,14 @@ function randomDate(start, end = null) {
   if (end === null) {
     end = dayjs();
   }
-  const fromMilli = start.valueOf();
-  const max = end.valueOf() - fromMilli;
+  const fromMilli = dayjs(start).valueOf();
+  const max = dayjs(end).valueOf() - fromMilli;
   const dateOffset = Math.floor(Math.random() * max + 1);
   const newDate = dayjs(fromMilli + dateOffset);
-  return dayjs(newDate);
+  return dayjs(newDate).toDate();
 }
 
-const formatDate = (date, format) => date.format(format);
+const formatDate = (date, format) => dayjs(date).format(format);
+const isDatesEqual = (dateA, dateB) => dayjs(dateA).isSame(dateB, 'D');
 
-export { getRandomArrayElement, getRandomInt, randomDate, formatDate };
+export { getRandomArrayElement, getRandomInt, randomDate, formatDate, isDatesEqual };
