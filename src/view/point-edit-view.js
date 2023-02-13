@@ -144,6 +144,7 @@ export default class PointEditView extends AbstractStatefulView {
   #offers = null;
   #destinations = null;
 
+  #priceValue = '0';
 
   constructor({ point = BLANK_POINT, offers, destinations, onFormSubmit, onFormClose, onResetClick }) {
     super();
@@ -239,7 +240,11 @@ export default class PointEditView extends AbstractStatefulView {
   #destinationChangeHandler = (evt) => {
     evt.preventDefault();
     const selectedDestination = this.#destinations.find((destination) => evt.target.value === destination.name);
-    if (selectedDestination !== null) {
+    if (!selectedDestination) {
+      this.updateElement({
+        destination: -1,
+      });
+    } else {
       this.updateElement({
         destination: selectedDestination.id,
       });
@@ -268,7 +273,7 @@ export default class PointEditView extends AbstractStatefulView {
     element.querySelector('form').addEventListener('submit', this.#formSubmitHandler.bind(this));
     element.querySelector('.event__type-group').addEventListener('change', this.#pointTypeChangeHandler.bind(this));
     element.querySelector('.event__input--destination').addEventListener('change', this.#destinationChangeHandler.bind(this));
-    element.querySelector('.event__input--price').addEventListener('change', this.#priceInputHandler);
+    element.querySelector('.event__input--price').addEventListener('input', this.#priceInputHandler);
 
     const eventResetBtn = element.querySelector('.event__reset-btn');
     if (eventResetBtn) {
@@ -281,9 +286,21 @@ export default class PointEditView extends AbstractStatefulView {
 
   #priceInputHandler = (evt) => {
     evt.preventDefault();
-    this._setState({
-      price: parseInt( evt.target.value, 10 )
-    });
+    if (evt.target.value === '') {
+      this.#priceValue = '0';
+      this._setState({
+        price: 0
+      });
+    }
+    else if (evt.target.value.match(/^[0-9]+$/)) {
+      this.#priceValue = evt.target.value;
+      this._setState({
+        price: parseInt( evt.target.value, 10 )
+      });
+    }
+    else {
+      evt.target.value = this.#priceValue;
+    }
   };
 
   static parsePointToState(point) {

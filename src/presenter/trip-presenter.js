@@ -1,5 +1,4 @@
 import { remove, render } from '../framework/render.js';
-// import FilterView from '../view/filter-view.js';
 import SortView from '../view/sort-view.js';
 import PointListView from '../view/point-list-view.js';
 import NoPointView from '../view/no-point-view.js';
@@ -115,9 +114,8 @@ export default class TripPresenter {
         if (this.#isLoading) {
           this.#isLoading = false;
           remove(this.#loadingView);
+          render(this.#errorView, this.#siteMainContainer);
         }
-        this.#clearList({resetSortType: true});
-        render(this.#errorView, this.#siteMainContainer);
     }
   };
 
