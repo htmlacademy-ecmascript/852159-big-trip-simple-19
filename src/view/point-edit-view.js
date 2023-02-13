@@ -5,6 +5,7 @@ import { DATE_TIME_FORMAT } from '../constants/date-time';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 
 import 'flatpickr/dist/flatpickr.min.css';
+import { PRICE_REGEX } from '../const';
 
 const BLANK_DESTINATION = {
   name: '',
@@ -292,7 +293,7 @@ export default class PointEditView extends AbstractStatefulView {
         price: 0
       });
     }
-    else if (evt.target.value.match(/^[0-9]+$/)) {
+    else if (evt.target.value.match(PRICE_REGEX)) {
       this.#priceValue = evt.target.value;
       this._setState({
         price: parseInt( evt.target.value, 10 )

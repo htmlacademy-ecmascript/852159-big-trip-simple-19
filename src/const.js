@@ -32,4 +32,6 @@ const TimeLimit = {
 const ENDPOINT = 'https://19.ecmascript.pages.academy/big-trip-simple';
 const AUTHORIZATION = 'Basic eo0w590ik29889aUPl34s3D0nt1Us3I7';
 
-export { FilterType, SortType, DEFAULT_SORT_TYPE, UserAction, UpdateType, ENDPOINT, AUTHORIZATION, TimeLimit };
+const PRICE_REGEX = /^[0-9]+$/;
+
+export { FilterType, SortType, DEFAULT_SORT_TYPE, UserAction, UpdateType, ENDPOINT, AUTHORIZATION, TimeLimit, PRICE_REGEX };
